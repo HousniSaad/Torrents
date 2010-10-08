@@ -1,0 +1,33 @@
+    QDomDocument doc("test");
+    QFile File ("test.xml");
+    if( !File.open(QIODevice::ReadOnly) )
+        std::cout <<"Erreur d'ouverture";
+    if( !doc.setContent( &File ) )
+    {
+          File.close();
+         std::cout << "Erreur dans setContent";
+    }
+    File.close();
+
+    QDomElement docElem = doc.documentElement();
+    QDomNode n = docElem.firstChild();
+    while(!n.isNull()) {
+        QDomElement e = n.toElement();
+        if(!e.isNull()) {
+            if(e.tagName() == "Resolution")
+            {
+                e.setAttribute("x", resX);
+                e.setAttribute("y", resY);
+                break;
+            }
+        }
+        n = n.nextSibling();
+    }
+
+    QFile FinalFile("xml_modifie.xml");
+    if( !FinalFile.open(QIODevice::WriteOnly) )
+        std::cout << "Erreur de savaugarde";
+    QTextStream out ( &FinalFile);
+    out << doc.toString();
+    FinalFile.close();
+
