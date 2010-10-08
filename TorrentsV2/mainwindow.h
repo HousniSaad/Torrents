@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QAbstractItemModel>
+#include <QStandardItemModel>
 #include <QTreeView>
 
 #include "webview.h"
@@ -18,7 +18,7 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    QAbstractItemModel *createSeriesMailModel(QString);
+    void createSeriesMailModel(QString);
 
 protected slots:
     void Refreshing(void);
@@ -30,6 +30,7 @@ protected:
 
 private:
     Ui::MainWindow *ui;
+    QStandardItemModel *model;
     WebView *web;
 
     QSXML *serie;

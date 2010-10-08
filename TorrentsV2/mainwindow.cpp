@@ -29,8 +29,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->setupUi(this);
     setWindowIcon(QIcon(":/icon.png"));
 
-        serie =new QSXML();
-        web = new WebView();
+    model = new QStandardItemModel(0, 4);
+    ui->SeriesView->setModel(model);
+
+    serie =new QSXML();
+    web = new WebView();
     this->Refreshing();
 
     ui->SeriesView->setRootIsDecorated(false);
@@ -71,43 +74,40 @@ void MainWindow::changeEvent(QEvent *e)
     }
 }
 
-void addSeriesMail(QAbstractItemModel *model, const QString &name,
+void addSeriesMail(QStandardItemModel *model, const QString &name,
              const QString &season, const QString &episode,const QString &status)
 {
-    qDebug()<<"2"<<model->rowCount();
     model->insertRow(0);
     model->setData(model->index(0, 0), name);
     model->setData(model->index(0, 1), season);
     model->setData(model->index(0, 2), episode);
     model->setData(model->index(0, 3), status);
-qDebug()<<"3"<<model->rowCount();
- }
+}
 
-QAbstractItemModel *MainWindow::createSeriesMailModel(QString SType)
+void MainWindow::createSeriesMailModel(QString SType)
 {
-    QStandardItemModel *model = new QStandardItemModel(0, 4);
+    for(int i= model->rowCount()-1;i>=0;i--) model->removeRow(i);
 
     model->setHeaderData(0, Qt::Horizontal, QObject::tr("Name"));
     model->setHeaderData(1, Qt::Horizontal, QObject::tr("Season"));
     model->setHeaderData(2, Qt::Horizontal, QObject::tr("Episode"));
     model->setHeaderData(3, Qt::Horizontal, QObject::tr("Status"));
-qDebug()<<"1"<<model->rowCount();
-    QList<QShow> Smodel=serie->FullElmt();
-    for(int i=0;i<Smodel.count();i++)
-        addSeriesMail(model,Smodel[i].Name,Smodel[i].Season,Smodel[i].Episode,SType);
 
-return model;
+    QList<QShow> Smodel=serie->FullElmt();
+
+    for(int i=0;i<Smodel.count();i++)
+        addSeriesMail(model,Smodel[i].Name,Smodel[i].Season,Smodel[i].Episode,SType); 
 }
 
 void MainWindow::Waiting()
 {
     serie->exec();
-    ui->SeriesView->setModel(createSeriesMailModel("Pending"));
+    createSeriesMailModel("Pending");
 }
 
 void MainWindow::Refreshing()
 {
     serie->exec();
-    ui->SeriesView->setModel(createSeriesMailModel("Searching"));
+    createSeriesMailModel("Searching");
     web->exec(serie);
 }
